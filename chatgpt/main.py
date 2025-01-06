@@ -61,7 +61,7 @@ If the group replies to the bot using text, you can also use commands such as @{
 
 Feel free to ask me anything for free! 
 
-**💬 Support: @XBOTSUPPORTS**"""
+**💬 Support: @TELLYCLOUD_BOTS**"""
 
 @Client.on_callback_query()
 async def callback(client, query):
