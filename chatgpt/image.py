@@ -1,4 +1,4 @@
-from HorridAPI import Async
+from HorridAPI import AsyncClient
 from pyrogram import filters, Client 
 from pyrogram.types import InputMediaPhoto
 
