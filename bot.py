@@ -1,7 +1,8 @@
+import os
 from pyrogram import Client
-from config import API_ID, API_HASH, BOT_TOKEN
 from aiohttp import web
-from chatgpt import web_server 
+from config import API_ID, API_HASH, BOT_TOKEN
+from chatgpt import web_server
 
 class Bot(Client):
     def __init__(self):
@@ -16,13 +17,24 @@ class Bot(Client):
         )
 
     async def start(self, *args, **kwargs):
-        await super().start(*args, **kwargs)  # Pass extra arguments to the superclass
+        await super().start(*args, **kwargs)
         me = await self.get_me()
         app = web.AppRunner(await web_server())
         await app.setup()
-        await web.TCPSite(app, "0.0.0.0", 8080).start()
+        port = int(os.getenv("PORT", 8080))  # Use dynamic port
+        await web.TCPSite(app, "0.0.0.0", port).start()
         print(f"{me.first_name} Now Working 😘")
 
-# Create and run the bot
+    async def stop(self, *args, **kwargs):
+        await super().stop(*args, **kwargs)
+        print("Bot stopped.")
+
+# Run the bot
 app = Bot()
-app.run()
+
+from asyncio import run
+
+async def main():
+    await app.run()
+
+run(main())
