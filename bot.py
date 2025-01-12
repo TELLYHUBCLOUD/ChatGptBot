@@ -1,7 +1,8 @@
+import asyncio
 from pyrogram import Client
 from config import API_ID, API_HASH, BOT_TOKEN
 from aiohttp import web
-from chatgpt import web_server 
+from chatgpt import web_server
 
 class Bot(Client):
     def __init__(self):
@@ -23,6 +24,21 @@ class Bot(Client):
         await web.TCPSite(app, "0.0.0.0", 8080).start()
         print(f"{me.first_name} Now Working 😘")
 
-# Create and run the bot
-app = Bot()
-app.run()
+    async def stop(self, *args, **kwargs):
+        await super().stop(*args, **kwargs)
+        print("Bot stopped.")
+
+# Main entry point
+if __name__ == "__main__":
+    app = Bot()
+
+    async def main():
+        try:
+            await app.start()
+            await asyncio.Event().wait()  # Keep the bot running indefinitely
+        except KeyboardInterrupt:
+            pass
+        finally:
+            await app.stop()
+
+    asyncio.run(main())
