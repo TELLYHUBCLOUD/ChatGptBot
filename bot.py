@@ -2,7 +2,7 @@ import asyncio
 from pyrogram import Client
 from config import API_ID, API_HASH, BOT_TOKEN
 from aiohttp import web
-from chatgpt import web_server
+from chatgpt import web_server  # Ensure this is correctly implemented
 
 class Bot(Client):
     def __init__(self):
@@ -16,29 +16,40 @@ class Bot(Client):
             sleep_threshold=15,
         )
 
-    async def start(self, *args, **kwargs):
-        await super().start(*args, **kwargs)  # Pass extra arguments to the superclass
+    async def start(self):
+        print("Starting bot...")
+        await super().start()
         me = await self.get_me()
-        app = web.AppRunner(await web_server())
-        await app.setup()
-        await web.TCPSite(app, "0.0.0.0", 8080).start()
-        print(f"{me.first_name} Now Working 😘")
+        print(f"Bot {me.first_name} (@{me.username}) is now running!")
 
-    async def stop(self, *args, **kwargs):
-        await super().stop(*args, **kwargs)
+        # Start the web server
+        try:
+            app = web.AppRunner(await web_server())
+            await app.setup()
+            site = web.TCPSite(app, "0.0.0.0", 8080)
+            await site.start()
+            print("Web server running on http://0.0.0.0:8080")
+        except Exception as e:
+            print(f"Error starting web server: {e}")
+
+    async def stop(self):
+        print("Stopping bot...")
+        await super().stop()
         print("Bot stopped.")
 
 # Main entry point
-if __name__ == "__main__":
+async def main():
     app = Bot()
+    try:
+        await app.start()
+        await asyncio.Event().wait()  # Keep running indefinitely
+    except KeyboardInterrupt:
+        print("KeyboardInterrupt detected. Shutting down.")
+    finally:
+        await app.stop()
 
-    async def main():
-        try:
-            await app.start()
-            await asyncio.Event().wait()  # Keep the bot running indefinitely
-        except KeyboardInterrupt:
-            pass
-        finally:
-            await app.stop()
-
-    asyncio.run(main())
+if __name__ == "__main__":
+    try:
+        asyncio.run(main())
+    except Exception as e:
+        print(f"Unhandled exception: {e}")
