@@ -11,7 +11,7 @@ ADMINS = [int(admins) if id_pattern.search(admins) else admins for admins in env
 
 # bs
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', '-1002117870388'))
-fsub_eid = environ.get('FSUB_ID')
+fsub_eid = environ.get('-1001908798887')
 FSUB_ID = int(fsub_eid) if fsub_eid and id_pattern.search(fsub_eid) else None
 
 # database
