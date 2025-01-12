@@ -1,4 +1,5 @@
 import os
+import asyncio
 from pyrogram import Client
 from aiohttp import web
 from config import API_ID, API_HASH, BOT_TOKEN
@@ -32,9 +33,19 @@ class Bot(Client):
 # Run the bot
 app = Bot()
 
-from asyncio import run
-
 async def main():
-    await app.run()
+    await app.start()
+    try:
+        await asyncio.Event().wait()  # Keep the bot running
+    finally:
+        await app.stop()
 
-run(main())
+# Handle the already-running event loop scenario
+if __name__ == "__main__":
+    loop = asyncio.get_event_loop()
+    if loop.is_running():
+        # If the event loop is already running
+        loop.create_task(main())
+    else:
+        # If no event loop is running
+        asyncio.run(main())
