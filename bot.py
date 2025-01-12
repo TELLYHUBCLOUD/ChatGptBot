@@ -15,14 +15,12 @@ class Bot(Client):
             sleep_threshold=15,
         )
 
-    async def start(self, *args, **kwargs):
-        await super().start(*args, **kwargs)  # Pass extra arguments to the superclass
+    async def start(self):
+        await super().start()
         me = await self.get_me()
         app = web.AppRunner(await web_server())
         await app.setup()
-        await web.TCPSite(app, "0.0.0.0", 80).start()
+        await web.TCPSite(app, "0.0.0.0", 8080).start()
         print(f"{me.first_name} Now Working 😘")
-
-# Create and run the bot
-app = Bot()
-app.run()
+        
+Bot().run()
